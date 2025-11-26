@@ -1,0 +1,14 @@
+
+-> To Compile & Run:
+yacc -d calculator.y
+lex calculator.l
+cc lex.yy.c y.tab.c -o calc
+./calc
+
+-> Output:
+Enter any arithmetic expression (supports + - * / % and parentheses):
+(10+5)*3
+
+Result = 45
+
+Entered arithmetic expression is Valid

@@ -1,0 +1,18 @@
+
+-> To Compile & Run:
+lex arith_id.l
+yacc -d arith_id.y
+gcc lex.yy.c y.tab.c -o parser
+./parser
+
+-> Output:
+
+* Input: x = a + b
+
+Identifier is x
+Operator is EQUAL
+Identifier is a
+Operator is PLUS
+Identifier is b
+
+Valid arithmetic expression
