@@ -6,7 +6,7 @@
 
 void *reader(void *);
 void *consumer(void *);
-int datat = 0;
+int data = 0;
 
 typedef struct {
     pthread_mutex_t mutex;
@@ -19,62 +19,61 @@ typedef struct {
 
 
 void rwlock_init(rwlock_t* rw) {
-    pthread_mutex_init(&rw->mutex, NULL);
-    pthread_cond_init(&rw->reader_proceed, NULL);
-    pthread_cond_init(&rw->writer_proceed, NULL);
+    pthread_mutex_init( &(rw->mutex) , NULL);
+    pthread_cond_init( &(rw->reader_proceed) , NULL);
+    pthread_cond_init( &(rw->writer_proceed) , NULL);
     readers = writer = pending_writers = 0;
 }
 
 void rwlock_destroy(rwlock_t* rw) {
-    pthread_mutex_destroy(&rw->mutex);
-    pthread_cond_destroy(&rw->reader_proceed);
-    pthread_cond_destroy(&rw->writer_proceed);
+    pthread_mutex_destroy( &(rw->mutex) );
+    pthread_cond_destroy( &(rw->reader_proceed) );
+    pthread_cond_destroy( &(rw->writer_proceed) );
 }
 
 void rwlock_rdlock(rwlock_t* rw) {
-    pthread_mutex_lock(&rw->mutex);
+    pthread_mutex_lock( &(rw->mutex) );
 
     if( rw->writer || rw->pending_writers ) {
-        pthread_cond_wait(&rw->reader_proceed, &rw->mutex);
+        pthread_cond_wait( &(rw->reader_proceed) , &(rw->mutex) );
     }
 
     readers += 1;
 
-    pthread_mutex_unlock(&rw->mutex);
+    pthread_mutex_unlock( &(rw->mutex) );
 }
 
-pthread_exit(0);
 void rwlock_wrlock(rwlock_t* rw) {
-    pthread_mutex_lock(&rw->mutex);
+    pthread_mutex_lock( &(rw->mutex) );
 
     rw->pending_writers += 1;
     if( rw->readers || rw->writers > 0) {
-        pthread_cond_wait(&rw->writer_proceed, &rw->mutex);
+        pthread_cond_wait( &(rw->writer_proceed) , &(rw->mutex) );
     }
 
     rw->pending_writers -= 1;
     rw->writer = 1;
 
-    pthread_mutex_unlock(&rw->mutex);
+    pthread_mutex_unlock( &(rw->mutex) );
 }
 
 void rwlock_unlock(rwlock_t* rw) {
-    pthread_mutex_lock(&rw->mutex);
+    pthread_mutex_lock( &(rw->mutex) );
 
     if( rw->writer) { rw->writer = 0;   }
     else { rw->reader--; }
 
     if( rw->pending_writers > 0 && rw->reader == 0) {
-        pthread_cond_signal(&rw->writer_proceed);
+        pthread_cond_signal( &(rw->writer_proceed) );
     }
-    else pthread_cond_broadcast(&rw->reader_proceed);
+    else pthread_cond_broadcast( &(rw->reader_proceed) );
 
-    pthread_mutex_unlock(&rw->mutex);
+    pthread_mutex_unlock( &(rw->mutex) );
 }
 
 
-int main() {
-    rwlock_t rwlock;
+rwlock_t rwlock;
+int main(int argc, void** argv) {
     rwlock_init(&rwlock);
 
     int ids[5] = [1, 2, 3, 4, 5];
@@ -97,7 +96,7 @@ int main() {
     return 0;
 }
 
-void *reader(rwlock_t rw, void* args) {
+void *reader(void* args) {
     int id = *(int*)args;
     rwlock_rdlock(&rw);
     printf("Reader [%d] read: %n\n", id, data);
@@ -105,7 +104,7 @@ void *reader(rwlock_t rw, void* args) {
     pthread_exit(0);
 }
 
-void *writer(rwlock_t rw, void* args) {
+void *writer(void* args) {
     int id = *(int*)args;
     rwlock_wrlock(&rw);
     datat += 1;
