@@ -1,3 +1,10 @@
+/*
+    Pthreads Program to simulate DAXPY Loop.
+        => Double-precision A-X-Plus-Y
+    : for( i = 0->n ) {
+        y[i] = a * X[i] + Y[i];
+      }
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

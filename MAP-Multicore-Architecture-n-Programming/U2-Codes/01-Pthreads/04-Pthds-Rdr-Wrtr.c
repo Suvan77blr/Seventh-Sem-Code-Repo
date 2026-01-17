@@ -1,4 +1,9 @@
-
+/*
+    Multithreaded-Program to simulate Read-Write lock ensuring:
+        - 'n' readers.
+        - 1 writers.
+        - 'm' pending-writers.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

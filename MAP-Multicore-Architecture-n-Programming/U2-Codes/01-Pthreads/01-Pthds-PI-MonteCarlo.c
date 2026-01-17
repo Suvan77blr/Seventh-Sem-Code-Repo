@@ -1,4 +1,6 @@
-
+/*
+    Pthreads Program to compute PI using Monte-Carlo estimation.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

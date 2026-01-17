@@ -1,5 +1,7 @@
-// Producer-Consumer Code using Condition-Variables.
-// TB-Version.
+/*
+    Producer-Consumer Code using Condition-Variables.
+    // TB-Version.
+*/ 
 
 #include <stdio.h>
 #include <stdlib.h>
