@@ -1,0 +1,140 @@
+
+1. 
+
+* To expose a service.
+kubectl expose deployment my-dep \
+--type=NodePort \
+--name=my-service
+--namespace=asdf \
+
+
+2.
+
+* To update an image in a live container.
+kubectl set image deployment/my-dep \
+old-cnt-name=new-image \
+--namespace=asdf
+
+*kubectl describe deployment my-dep -n asdf 
+( | grep new-image )
+
+< kb port-forward svc/my-svc 8080:80 -n asdf >
+
+
+3. 
+
+kubectl run pod-name \
+--image=nginx 
+--restart=Never 
+--labels=app=ms99cs001-v1 
+--namespace=ms99cs001
+
+
+4. 
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu
+  namespace: usn
+  labels:
+    app: ubuntu
+spec:
+  containers:
+  - name: ubuntu
+    image: 172.1.14.168:5001/ubuntu
+    env:
+    - name: MSG
+      value: "Hai!"
+    command: ["/bin/bash"]
+    args: ["-c", "echo $(MSG)"]
+
+* kubectl logs ubuntu –-namespace=usn
+
+
+5. 
+
+* SRV version :-
+kb run ubuntu \
+  --image=172.1.14.168:5001/ubuntu \
+  --restart=Never \
+  --namespace=usn \
+  --labels=app=ubuntu \
+  --env=MSG=Hai! \
+  --command -- /bin/bash -c 'echo $MSG'
+
+
+=> 
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu
+  namespace: usn
+  labels:
+    app: ubuntu
+spec:
+  containers:
+  - name: ubuntu
+    image: 172.1.14.168:5001/ubuntu
+    env:
+    - name: MSG
+      value: "Hai!"
+    command:
+    - /bin/bash
+    - -c
+    - echo $MSG
+
+
+6. 
+* kubectl exec --namespace usn testpod -it -c c00 -- /bin/bash
+* curl localhost:80
+* exit
+* kubectl logs testpod –c c00 --namespace usn
+
+7. 
+pod1_nw.yaml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpod1
+spec:
+  containers:
+    - name: c02
+      image: 172.1.14.168:5001/nginx
+      ports:
+        - containerPort: 80
+
+pod2_nw.yaml
+
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpod2
+spec:
+  containers:
+    - name: c03
+      image: 172.1.14.168:5001/httpd
+      ports:
+        - containerPort: 80
+
+kubectl apply --namespace usn -f pod1_nw.yml
+kubectl apply --namespace usn -f pod2_nw.yml
+
+
+kubectl get pod testpod1 --namespace usn -o custom-columns=NAME:metadata.name,IP:status.podIP
+
+
+kubectl exec --namespace usn testpod1 -it -c c00 -- /bin/bash
+apt update
+apt install curl
+curl testpod1:80
+curl localhost:80
+curl <tespod2_ip>:80
+
+
+kubectl exec --namespace usn testpod2 -it -c c03 -- /bin/bash
+apt update
+apt install curl
+curl <testpod1_ip>:80

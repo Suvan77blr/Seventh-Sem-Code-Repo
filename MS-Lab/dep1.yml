@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: my-depl
+  namespace: cs150
+  labels:
+    app: my-app
+
+spec:
+  replicas: 3
+  
+  selector:
+    matchLabels:
+      app: my-app
+
+  template:
+    metadata:
+      labels: 
+        app: my-app
+
+    spec:
+      containers:
+      - name: nginx
+        image: ip-of-local-registry/nginx
+        ports:
+        - containerPort: 80
